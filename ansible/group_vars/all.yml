@@ -1,0 +1,8 @@
+db_name: db
+db_user: user
+db_password: pass
+postgresql_user: postgres
+postgresql_users: 
+  - {user: user, pass: pass}
+postgresql_databases:
+  - {name: db, owner: user}

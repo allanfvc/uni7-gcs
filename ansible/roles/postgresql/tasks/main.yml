@@ -1,0 +1,47 @@
+- name: Ensure cache is up to date
+  apt:
+    update_cache: yes
+- name: Install packages
+  apt:
+    name:
+    - postgresql
+    - postgresql-contrib
+    - libpq-dev
+    - python3-psycopg2
+- name: Ensure PostgreSQL is started and enabled on boot.
+  service:
+    name: postgresql
+    state: started
+    enabled: true
+- name: Configure host based authentication.
+  copy:
+    src: files/pg_hba.conf
+    dest: /etc/postgresql/10/main/pg_hba.conf
+    mode: 0600
+  notify: restart postgresql
+- name: Configure host based authentication.
+  copy:
+    src: files/postgresql.conf
+    dest: /etc/postgresql/10/main/postgresql.conf
+    mode: 0600
+  notify: restart postgresql
+- name: Ensure PostgreSQL databases are present.
+  postgresql_db:
+    name: node
+  become: true
+  become_user: postgres
+  # See: https://github.com/ansible/ansible/issues/16048#issuecomment-229012509
+  vars:
+    ansible_ssh_pipelining: true
+- name: Ensure PostgreSQL users are present.
+  postgresql_user:
+    name: nodeuser
+    password: '123456'
+    state: present
+    db: node
+    priv: "ALL"
+  become: true
+  become_user: postgres
+  # See: https://github.com/ansible/ansible/issues/16048#issuecomment-229012509
+  vars:
+    ansible_ssh_pipelining: true

@@ -1,0 +1,18 @@
+  - name: "Instala nodejs, npm e git"
+    apt:
+      name: 
+        - nodejs
+        - npm
+        - git
+      update_cache: yes
+    become: yes
+  - name: Clone repo
+    git:
+      repo: 'https://github.com/joaquimpedrooliveira/node-js-getting-started'
+      dest: /var/www/nodejs-app
+    become: yes
+  - name: Install project dependencies
+    npm:
+      path: /var/www/nodejs-app
+      state: present
+    become: yes
